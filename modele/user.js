@@ -36,8 +36,9 @@ async function insertUser(name, email, password) {
   const values = [name, email, password];
 
   const result = await queryDatabase(sql, values);
-  return result[0];
+  return result.insertId;
 }
+
 
 module.exports = {
   getUserByEmail,
