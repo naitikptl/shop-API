@@ -1,7 +1,7 @@
 const User = require("../modele/user");
 const db = require("../config/db");
 const bcrypt = require("bcryptjs");
-
+const { generateToken } = require("../utile/tokenGenerator");
 async function registerUser(req, res) {
   const { name, email, password } = req.body;
   try {
@@ -13,6 +13,8 @@ async function registerUser(req, res) {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const userId = await User.insertUser(name, email, hashedPassword);
+
+      const token = await generateToken(userId);
       return res.json({
         massage: "user register",
         user: {
@@ -20,6 +22,7 @@ async function registerUser(req, res) {
           name: name,
           email: email,
         },
+        token: token,
       });
     }
   } catch (error) {
@@ -45,11 +48,14 @@ async function userLogin(req, res) {
     if (!isPasswordValid) {
       return res.status(401).json({ massage: "user password id invaild " });
     } else {
+      const token = await generateToken(user);
+
       return res.json({
         massage: "user logged in successful",
         id: user.id,
         name: user.name,
         email: user.email,
+        token: token,
       });
     }
   } catch (error) {
@@ -58,8 +64,8 @@ async function userLogin(req, res) {
     });
   }
 }
+
 module.exports = {
   registerUser,
   userLogin,
-  
 };

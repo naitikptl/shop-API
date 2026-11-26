@@ -39,9 +39,36 @@ async function insertUser(name, email, password) {
   return result.insertId;
 }
 
+async function insertUserAddress(
+  userId,
+  fullName,
+  phone,
+  address_line1,
+  city,
+  state,
+  pincode,
+  country,
+) {
+  const sql = `INSERT INTO addresses (user_id, full_name, phone, address_line1, city, state, pincode, country )
+  VALUES(?,?,?,?,?,?,?,?)`;
+
+  const values = [
+    userId,
+    fullName,
+    phone,
+    address_line1,
+    city,
+    state,
+    pincode,
+    country,
+  ];
+  const result = await queryDatabase(sql, values);
+  return result.insertId;
+}
 
 module.exports = {
   getUserByEmail,
   getUserById,
   insertUser,
+  insertUserAddress,
 };
