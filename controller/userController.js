@@ -97,9 +97,66 @@ async function updateUser(req, res) {
   }
 }
 
+async function getUserAddress(req, res) {
+  const userId = res.user.userId;
+  try {
+    const result = await User.getUserAddress(userId);
+    return res.json({
+      address: result,
+    });
+  } catch (error) {
+    return res.status(303).json({
+      message: "internal error ",
+    });
+  }
+}
+
+async function addUserAddress(req, res) {
+  const userId = res.user.userId;
+
+  const user = await User.getUserById(userId);
+  const {
+    full_name,
+    phone,
+    address_line1,
+    address_line2,
+    city,
+    state,
+    pincode,
+    country,
+  } = req.body;
+  try {
+    if (!user) {
+      return res.status(404).json({
+        message: "user not found ",
+      });
+    }
+    const addressData = await User.insertUserAddress(
+      userId,
+      full_name,
+      phone,
+      address_line1,
+      address_line2,
+      city,
+      state,
+      pincode,
+      country,
+    );
+    return res.json({
+      message: "address saved",
+    });
+  } catch (error) {
+    return res.status(402).json({
+      message: "internal error",
+    });
+  }
+}
+
 module.exports = {
   registerUser,
   userLogin,
   getUserProfile,
   updateUser,
+  getUserAddress,
+  addUserAddress,
 };
