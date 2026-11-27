@@ -66,9 +66,19 @@ async function insertUserAddress(
   return result.insertId;
 }
 
+async function upDateUser(name, email, phone, userId) {
+  const sql = `UPDATE users SET name=? , email =? , phone=?
+  WHERE id=?`;
+  const values = [name, email, phone, userId];
+
+  const result = await queryDatabase(sql, values);
+  return result.affectedRows;
+}
+
 module.exports = {
   getUserByEmail,
   getUserById,
   insertUser,
   insertUserAddress,
+  upDateUser,
 };

@@ -2,6 +2,8 @@ const User = require("../modele/user");
 const db = require("../config/db");
 const bcrypt = require("bcryptjs");
 const { generateToken } = require("../utile/tokenGenerator");
+const { json } = require("express");
+
 async function registerUser(req, res) {
   const { name, email, password } = req.body;
   try {
@@ -17,11 +19,6 @@ async function registerUser(req, res) {
       const token = await generateToken(userId);
       return res.json({
         massage: "user register",
-        user: {
-          id: userId,
-          name: name,
-          email: email,
-        },
         token: token,
       });
     }
@@ -52,9 +49,6 @@ async function userLogin(req, res) {
 
       return res.json({
         massage: "user logged in successful",
-        id: user.id,
-        name: user.name,
-        email: user.email,
         token: token,
       });
     }
@@ -65,7 +59,47 @@ async function userLogin(req, res) {
   }
 }
 
+async function getUserProfile(req, res) {
+  const userId = res.user.userId;
+
+  try {
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return res.status(402).json({ massage: "user not found" });
+    }
+    return res.json({
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+    });
+  } catch (error) {
+    return res.status(402).json({
+      error: error,
+      massage: "internal error",
+    });
+  }
+}
+
+async function updateUser(req, res) {
+  const user = res.user.userId;
+  const { name, email, phone } = req.body;
+
+  try {
+    const updatedData = User.upDateUser(name, email, phone, user);
+    return res.json({
+      massage: "user profile updated",
+    });
+  } catch (error) {
+    return res.status(402).json({
+      error: error,
+      massage: "internal error ",
+    });
+  }
+}
+
 module.exports = {
   registerUser,
   userLogin,
+  getUserProfile,
+  updateUser,
 };
