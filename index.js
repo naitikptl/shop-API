@@ -14,6 +14,7 @@ app.use(express.json());
 const userRoute = require("./routes/userRoutes");
 app.use(cors(corsOptions));
 app.use("/api", userRoute);
+app.use("/api/profile", userRoute);
 
 const port = process.env.PORT;
 const server = app.listen(port, () => {
