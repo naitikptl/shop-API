@@ -39,31 +39,52 @@ async function insertUser(name, email, password) {
   return result.insertId;
 }
 
+async function getUserAddress(userId) {
+  try {
+    const sql = `SELECT * FROM addresses WHERE user_id=?`;
+    const values = [userId];
+    const result = await queryDatabase(sql, values);
+
+    return result;
+  } catch (error) {
+    console.error("backend error", error);
+  }
+}
 async function insertUserAddress(
   userId,
   fullName,
   phone,
   address_line1,
+  address_line2,
   city,
   state,
   pincode,
   country,
 ) {
-  const sql = `INSERT INTO addresses (user_id, full_name, phone, address_line1, city, state, pincode, country )
-  VALUES(?,?,?,?,?,?,?,?)`;
-
-  const values = [
-    userId,
-    fullName,
-    phone,
-    address_line1,
-    city,
-    state,
-    pincode,
-    country,
-  ];
-  const result = await queryDatabase(sql, values);
-  return result.insertId;
+  console.log("user address come", userId);
+  console.log(fullName);
+  // const sql = `UPDATE  addresses (user_id, full_name, phone, address_line1, address_line2, city, state, pincode, country )
+  // VALUES(?,?,?,?,?,?,?,?,?)`;
+  const sql = `UPDATE addresses SET full_name=? , phone=? , address_line1=?,address_line2=? , city =?,state=?, pincode=?,country=?
+ WHERE user_id=?`;
+  try {
+    const values = [
+      fullName,
+      phone,
+      address_line1,
+      address_line2,
+      city,
+      state,
+      pincode,
+      country,
+      userId,
+    ];
+    const result = await queryDatabase(sql, values);
+    return result.affectedRows;
+  } catch (error) {
+    console.log("internal error ", error);
+    throw error;
+  }
 }
 
 async function upDateUser(name, email, phone, userId) {
@@ -79,6 +100,7 @@ module.exports = {
   getUserByEmail,
   getUserById,
   insertUser,
+  getUserAddress,
   insertUserAddress,
   upDateUser,
 };

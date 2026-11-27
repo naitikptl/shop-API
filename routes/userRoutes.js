@@ -14,6 +14,7 @@ router.post("/login", userController.userLogin);
 
 router.get("/profile", verifyToekn, userController.getUserProfile);
 router.post("/profile/update", verifyToekn, userController.updateUser);
-
+router.get("/address", verifyToekn, userController.getUserAddress);
+router.post("/address/update", verifyToekn, userController.addUserAddress);
 
 module.exports = router;
